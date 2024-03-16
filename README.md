@@ -9,26 +9,25 @@
 
 2. 单机安装 MySQL 8.0，测试：
 
-   a. 当 CPU 核心数量变化时，下单接口的性能变化情况，找出上限值。
+   a. 性能瓶颈是 CPU 还是硬盘。
 
-   b. 当硬盘 IOPS 变化时，下单接口的性能变化情况，找出上限值。
+   b. 阿里云服务器上 10000 iops 的固态硬盘与 50000 iops 的固态硬盘对性能的影响。
 
 3. 单机安装 ClickHouse，测试：
 
-   a. 当 CPU 核心数量变化时，下单接口的性能变化情况，找出上限值。
+   a. 跟 MySQL 的表现作对比。
 
-   b. 当硬盘 IOPS 变化时，下单接口的性能变化情况，找出上限值。
+4. 多机器安装分布式的 TiDB，测试：
 
-4. 单机安装分布式的 TiDB，测试：
+   a. 随着机器数量增加，每秒提交的订单数的变化情况是怎样的。
 
-   a. 当 CPU 核心数量变化时，下单接口的性能变化情况，找出上限值。
-
-   b. 当硬盘 IOPS 变化时，下单接口的性能变化情况，找出上限值。
-
-5. 多机器安装分布式的 TiDB，测试：
-
-   a. 随着机器数量增加，是否能突破第 4 步的瓶颈，找出上限值。
 
 ***
 
-# 
+# 使用
+
+以 MySQL 为例：
+
+1. 自行安装 MySQL 8.0 。
+2. 使用 MySQL 的 root 用户执行 order-bottleneck-test-api/init_sql/1.order-bottleneck-test-mysql.sql 文件。
+3. 使用 Intellij Idea 打开 order-bottleneck-test-api 项目，修改其中的 order-bottleneck-test-api/src/main/resources/application.yml 中的数据库 IP 。
