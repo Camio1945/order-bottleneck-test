@@ -22,11 +22,7 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>com.h2database</groupId>-->
-    <!--      <artifactId>h2</artifactId>-->
-    <!--      <scope>runtime</scope>-->
-    <!--    </dependency>-->
+    <!-- MyBatis Plus -->
     <dependency>
       <groupId>com.baomidou</groupId>
       <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
@@ -56,18 +52,6 @@
   </dependencies>
 
   <build>
-    <!-- 以下资源配置是为了确保 mybatis-plus 对应的 *Mapper.xml 文件都打包进去了 -->
-<!--    <resources>-->
-<!--      <resource>-->
-<!--        <directory>src/main/resources</directory>-->
-<!--      </resource>-->
-<!--      <resource>-->
-<!--        <directory>src/main/java</directory>-->
-<!--        <includes>-->
-<!--          <include>**/*.xml</include>-->
-<!--        </includes>-->
-<!--      </resource>-->
-<!--    </resources>-->
     <plugins>
       <plugin>
         <groupId>org.graalvm.buildtools</groupId>
