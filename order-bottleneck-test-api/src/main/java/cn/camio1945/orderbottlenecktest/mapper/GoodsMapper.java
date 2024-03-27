@@ -14,18 +14,25 @@ import org.apache.ibatis.annotations.Update;
 public interface GoodsMapper extends BaseMapper<Goods> {
 
   /**
+   * 修改库存
+   *
+   * @param goodsId 商品id
+   * @param stock 库存
+   */
+  @Update("ALTER TABLE `goods` UPDATE `stock` = #{stock} WHERE `id` = #{goodsId}")
+  void updateStock(Integer goodsId, int stock);
+
+  /**
    * 减库存
    *
    * @param goodsId 商品id
    * @param decreaseCount 减少数量
-   * @return 影响行数
    */
-  @Update(
-      """
-          UPDATE `goods`
-            SET `stock` = `stock` - #{decreaseCount}
-          WHERE `id` = #{goodsId}
-            AND `stock` >= #{decreaseCount}
-          """)
-  int decreaseStock(Integer goodsId, int decreaseCount);
+  @Update("""
+        ALTER TABLE `goods` 
+        UPDATE `stock` = stock - #{decreaseCount} 
+        WHERE `id` = #{goodsId} 
+        AND stock >= #{decreaseCount}
+      """)
+  void decreaseStock(Integer goodsId, int decreaseCount);
 }

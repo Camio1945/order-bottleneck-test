@@ -28,12 +28,31 @@
       <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
       <version>3.5.5</version>
     </dependency>
-    <!-- 用于连接 MySQL 8.0 -->
+    <!-- 用于连接 Click House -->
     <dependency>
-      <groupId>com.mysql</groupId>
-      <artifactId>mysql-connector-j</artifactId>
-      <version>8.0.33</version>
+      <groupId>com.clickhouse</groupId>
+      <artifactId>clickhouse-jdbc</artifactId>
+      <version>0.6.0</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.core5/httpcore5 -->
+    <dependency>
+      <groupId>org.apache.httpcomponents.core5</groupId>
+      <artifactId>httpcore5</artifactId>
+      <version>5.2.4</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 -->
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>5.3.1</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.lz4/lz4-java -->
+    <dependency>
+      <groupId>org.lz4</groupId>
+      <artifactId>lz4-java</artifactId>
+      <version>1.8.0</version>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

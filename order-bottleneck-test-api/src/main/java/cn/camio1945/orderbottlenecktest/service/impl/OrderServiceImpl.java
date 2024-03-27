@@ -4,10 +4,11 @@ import cn.camio1945.orderbottlenecktest.constant.*;
 import cn.camio1945.orderbottlenecktest.mapper.*;
 import cn.camio1945.orderbottlenecktest.pojo.po.*;
 import cn.camio1945.orderbottlenecktest.service.IOrderService;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,8 @@ public class OrderServiceImpl implements IOrderService {
   @Autowired private GoodsMapper goodsMapper;
   @Autowired private OrderMapper orderMapper;
   @Autowired private OrderItemMapper orderItemMapper;
+  private static final AtomicInteger ORDER_ID = new AtomicInteger(0);
+  private static final AtomicInteger ORDER_ITEM_ID = new AtomicInteger(0);
 
   @Override
   public boolean resetDb() {
@@ -30,12 +33,13 @@ public class OrderServiceImpl implements IOrderService {
     orderMapper.truncate();
     orderItemMapper.truncate();
     // 还原库存
-    List<Goods> goods = goodsMapper.selectList(null);
-    LambdaUpdateWrapper<Goods> wrapper =
-        new LambdaUpdateWrapper<Goods>().set(Goods::getStock, GoodsConstant.INIT_STOCK);
-    goodsMapper.update(wrapper);
+    List<Goods> goodsList = goodsMapper.selectList(null);
+    for (Goods goods : goodsList) {
+      goods.setStock(GoodsConstant.INIT_STOCK);
+      goodsMapper.updateStock(goods.getId(), GoodsConstant.INIT_STOCK);
+    }
     GoodsConstant.GOODS_LIST.clear();
-    GoodsConstant.GOODS_LIST.addAll(goods);
+    GoodsConstant.GOODS_LIST.addAll(goodsList);
     return true;
   }
 
@@ -76,6 +80,7 @@ public class OrderServiceImpl implements IOrderService {
     for (int i = 0; i < itemsCount; i++) {
       Goods goods = GoodsConstant.GOODS_LIST.get(i);
       OrderItem orderItem = new OrderItem();
+      orderItem.setId(ORDER_ITEM_ID.incrementAndGet());
       orderItem.setGoodsId(goods.getId());
       orderItem.setGoodsCount(i + 1);
       orderItem.setGoodsPrice(goods.getPrice());
@@ -84,14 +89,18 @@ public class OrderServiceImpl implements IOrderService {
       BigDecimal totalAmount = goods.getPrice().multiply(new BigDecimal(goodsCount));
       orderItem.setTotalAmount(totalAmount);
       orderItems.add(orderItem);
-      int res = goodsMapper.decreaseStock(goods.getId(), goodsCount);
-      Assert.isTrue(res == 1, "库存不足：" + goods.getName());
+      synchronized (goods) {
+        Assert.isTrue(goods.getStock() >= goodsCount, "库存不足：" + goods.getName());
+        goods.setStock(goods.getStock() - goodsCount);
+      }
+      goodsMapper.decreaseStock(goods.getId(), goodsCount);
     }
     return orderItems;
   }
 
   private Order buildOrder(List<OrderItem> orderItems) {
     Order order = new Order();
+    order.setId(ORDER_ID.incrementAndGet());
     order.setUserId(1);
     order.setSn(UUID.randomUUID().toString());
     order.setName("张三");

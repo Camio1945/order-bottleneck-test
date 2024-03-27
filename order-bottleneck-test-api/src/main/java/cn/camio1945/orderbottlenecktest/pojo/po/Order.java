@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @TableName("`order`")
 public class Order {
 
-  @TableId(value = "id", type = IdType.AUTO)
+  @TableId(value = "id", type = IdType.INPUT)
   private Integer id;
 
   @TableField("sn")
