@@ -84,6 +84,7 @@ public class OrderServiceImpl implements IOrderService {
       BigDecimal totalAmount = goods.getPrice().multiply(new BigDecimal(goodsCount));
       orderItem.setTotalAmount(totalAmount);
       orderItems.add(orderItem);
+      // 减库存（从 MySQL 中操作）
       int res = goodsMapper.decreaseStock(goods.getId(), goodsCount);
       Assert.isTrue(res == 1, "库存不足：" + goods.getName());
     }
