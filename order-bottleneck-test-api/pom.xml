@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.fakedomain</groupId>
   <artifactId>order-bottleneck-test-api</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>mysql-redis</version>
   <name>order-bottleneck-test-api</name>
   <description>order-bottleneck-test-api</description>
   <properties>
