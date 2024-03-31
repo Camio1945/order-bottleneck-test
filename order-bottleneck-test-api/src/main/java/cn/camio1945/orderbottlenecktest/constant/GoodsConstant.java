@@ -15,5 +15,5 @@ public interface GoodsConstant {
   List<Goods> GOODS_LIST = new ArrayList<>();
 
   /** 初始库存 */
-  int INIT_STOCK = 100001;
+  int INIT_STOCK = 100000001;
 }

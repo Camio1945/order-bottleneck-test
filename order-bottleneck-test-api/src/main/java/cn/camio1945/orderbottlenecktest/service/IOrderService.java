@@ -25,4 +25,9 @@ public interface IOrderService {
    * @return 是否一致
    */
   boolean checkDataConsistency();
+
+  /**
+   * 从 Redis 同步库存到数据库
+   */
+  void syncStockFromRedisToDb();
 }

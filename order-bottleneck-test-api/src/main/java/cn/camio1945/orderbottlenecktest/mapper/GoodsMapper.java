@@ -17,6 +17,21 @@ public interface GoodsMapper extends BaseMapper<Goods> {
    * 减库存
    *
    * @param goodsId 商品id
+   * @param stock 库存
+   * @return 影响行数
+   */
+  @Update(
+      """
+          UPDATE `goods`
+            SET `stock` = #{stock}
+          WHERE `id` = #{goodsId}
+          """)
+  int updateStock(Integer goodsId, int stock);
+
+  /**
+   * 减库存
+   *
+   * @param goodsId 商品id
    * @param decreaseCount 减少数量
    * @return 影响行数
    */
