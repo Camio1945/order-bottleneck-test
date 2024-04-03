@@ -8,22 +8,6 @@ create user 'order_bottleneck_test'@'%' identified by 'Wng7_fncoia__2er';
 grant all privileges on order_bottleneck_test.* to 'order_bottleneck_test'@'%';
 flush privileges;
 
-/*
- Navicat Premium Data Transfer
-
- Source Server         : 笔记本0.102-order_bottleneck_test
- Source Server Type    : MySQL
- Source Server Version : 80030
- Source Host           : 192.168.0.102:3306
- Source Schema         : order_bottleneck_test
-
- Target Server Type    : MySQL
- Target Server Version : 80030
- File Encoding         : 65001
-
- Date: 14/03/2024 21:44:43
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -61,19 +45,20 @@ DROP TABLE IF EXISTS `order`;
 CREATE TABLE `order`  (
   `id` bigint NOT NULL AUTO_RANDOM COMMENT '主键',
   `sn` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '编号',
-  `user_id` int NOT NULL COMMENT '用户ID',
+  `user_id` bigint NOT NULL COMMENT '用户ID',
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '下单人姓名',
   `shipping_mobile` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '收货地址中的手机号',
   `shipping_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '收货地址中的姓名',
   `shipping_detail` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '收货地址',
   `total_amount` decimal(10, 2) NOT NULL COMMENT '订单总金额',
   `status` int NOT NULL COMMENT '状态：1-待支付，2-待发货，3-待收货，4-已完成，5-已取消',
-  `add_time` datetime NOT NULL COMMENT '下单时间',
+  `add_date_hour` char(10) NOT NULL COMMENT '下单时间（日期和小时，如：2012010209）',
+  `add_minute_second` char(4) NOT NULL COMMENT '下单时间（分钟和秒数，如：5959）',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `unique-sn`(`sn`) USING BTREE,
   INDEX `user_id`(`user_id`) USING BTREE,
   INDEX `status`(`status`) USING BTREE,
-  INDEX `addTime`(`add_time`) USING BTREE
+  INDEX `add_date_hour`(`add_date_hour`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '订单' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------

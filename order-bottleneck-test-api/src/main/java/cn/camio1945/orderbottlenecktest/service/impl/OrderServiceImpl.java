@@ -4,11 +4,15 @@ import cn.camio1945.orderbottlenecktest.constant.*;
 import cn.camio1945.orderbottlenecktest.mapper.*;
 import cn.camio1945.orderbottlenecktest.pojo.po.*;
 import cn.camio1945.orderbottlenecktest.service.IOrderService;
+import cn.hutool.core.text.CharSequenceUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -23,19 +27,24 @@ public class OrderServiceImpl implements IOrderService {
   @Autowired private GoodsMapper goodsMapper;
   @Autowired private OrderMapper orderMapper;
   @Autowired private OrderItemMapper orderItemMapper;
+  @Autowired private RedisTemplate<String, Object> redisTemplate;
+  private static final String GOODS_STOCK_PREFIX = "cache:goods:id:stock";
 
   @Override
   public boolean resetDb() {
-    // 清空两张表
-    orderMapper.truncate();
-    orderItemMapper.truncate();
+    // 注：tidb 版本不会清空数据库，只会还原库存
     // 还原库存
-    List<Goods> goods = goodsMapper.selectList(null);
+    List<Goods> goodsList = goodsMapper.selectList(null);
     LambdaUpdateWrapper<Goods> wrapper =
         new LambdaUpdateWrapper<Goods>().set(Goods::getStock, GoodsConstant.INIT_STOCK);
     goodsMapper.update(wrapper);
     GoodsConstant.GOODS_LIST.clear();
-    GoodsConstant.GOODS_LIST.addAll(goods);
+    GoodsConstant.GOODS_LIST.addAll(goodsList);
+    // 更新缓存中的库存
+    for (Goods goods : goodsList) {
+      String key = CharSequenceUtil.format("{}::{}", GOODS_STOCK_PREFIX, goods.getId());
+      redisTemplate.opsForValue().set(key, GoodsConstant.INIT_STOCK);
+    }
     return true;
   }
 
@@ -52,6 +61,7 @@ public class OrderServiceImpl implements IOrderService {
 
   @Override
   public boolean checkDataConsistency() {
+    syncStockFromRedisToDb();
     List<Goods> goodsList = goodsMapper.selectList(null);
     // 检查库存 >= 0
     int totalDecreasedStock = 0;
@@ -62,6 +72,17 @@ public class OrderServiceImpl implements IOrderService {
     int totalGoodsCount = orderItemMapper.selectTotalGoodsCount();
     Assert.isTrue(totalDecreasedStock == totalGoodsCount, "库存不一致");
     return true;
+  }
+
+  @Override
+  @Scheduled(fixedRate = 1000)
+  public synchronized void syncStockFromRedisToDb() {
+    ValueOperations<String, Object> operations = redisTemplate.opsForValue();
+    for (Goods goods : GoodsConstant.GOODS_LIST) {
+      String key = CharSequenceUtil.format("{}::{}", GOODS_STOCK_PREFIX, goods.getId());
+      int stock = (Integer) operations.get(key);
+      goodsMapper.updateStock(goods.getId(), stock);
+    }
   }
 
   private List<OrderItem> updateStockAndBuildOrderItems() {
@@ -84,15 +105,20 @@ public class OrderServiceImpl implements IOrderService {
       BigDecimal totalAmount = goods.getPrice().multiply(new BigDecimal(goodsCount));
       orderItem.setTotalAmount(totalAmount);
       orderItems.add(orderItem);
-      int res = goodsMapper.decreaseStock(goods.getId(), goodsCount);
-      Assert.isTrue(res == 1, "库存不足：" + goods.getName());
+      // 减库存（从 Redis 中操作）
+      String key = CharSequenceUtil.format("{}::{}", GOODS_STOCK_PREFIX, goods.getId());
+      synchronized (goods) {
+        int currentStock = (int) redisTemplate.opsForValue().get(key);
+        Assert.isTrue(currentStock >= goodsCount, "库存不足：" + goods.getName());
+        redisTemplate.opsForValue().set(key, currentStock - goodsCount);
+      }
     }
     return orderItems;
   }
 
   private Order buildOrder(List<OrderItem> orderItems) {
     Order order = new Order();
-    order.setUserId(1);
+    order.setUserId(1L);
     order.setSn(UUID.randomUUID().toString());
     order.setName("张三");
     order.setShippingMobile("12345678901");
@@ -103,7 +129,11 @@ public class OrderServiceImpl implements IOrderService {
         .reduce(BigDecimal::add)
         .ifPresent(order::setTotalAmount);
     order.setStatus(OrderConstant.Status.UNPAID);
-    order.setAddTime(LocalDateTime.now());
+    LocalDateTime now = LocalDateTime.now();
+    String nowStr = now.toString();
+    String addDateHour = nowStr.substring(0, 13).replace("-", "").replace("T", "");
+    order.setAddDateHour(addDateHour);
+    order.setAddMinuteSecond(nowStr.substring(14, 19).replace(":", ""));
     return order;
   }
 }

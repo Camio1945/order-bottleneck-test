@@ -42,6 +42,7 @@ public class ApplicationEventListener implements ApplicationListener {
     // 项目停止和应用关闭事件
     if ((event instanceof ContextStoppedEvent) || (event instanceof ContextClosedEvent)) {
       LOGGER.info("项目停止和应用关闭事件");
+      orderService.syncStockFromRedisToDb();
     }
   }
 }

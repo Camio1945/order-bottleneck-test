@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.fakedomain</groupId>
   <artifactId>order-bottleneck-test-api</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>tidb</version>
   <name>order-bottleneck-test-api</name>
   <description>order-bottleneck-test-api</description>
   <properties>
@@ -33,6 +33,35 @@
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
       <version>8.0.33</version>
+    </dependency>
+    <!-- 用于连接 Redis -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+    <!-- 用于缓存 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-cache</artifactId>
+    </dependency>
+    <!-- Redis 客户端 -->
+    <dependency>
+      <groupId>io.lettuce</groupId>
+      <artifactId>lettuce-core</artifactId>
+      <version>6.3.1.RELEASE</version>
+    </dependency>
+    <!-- hutool 工具类 -->
+    <dependency>
+      <groupId>cn.hutool</groupId>
+      <artifactId>hutool-all</artifactId>
+      <version>5.8.25</version>
+    </dependency>
+    <!-- lombok，用于简化开发时的代码 -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.30</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
