@@ -8,7 +8,7 @@ server:
 
 logging:
   level:
-    cn.camio1945: warn
+    cn.camio1945: info
     com.baomidou.mybatisplus.core.executor.BaseExecutor: warn
 
 spring:

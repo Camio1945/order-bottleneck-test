@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -30,6 +31,12 @@ public class OrderServiceImpl implements IOrderService {
   @Autowired private RedisTemplate<String, Object> redisTemplate;
   private static final String GOODS_STOCK_PREFIX = "cache:goods:id:stock";
 
+  /** 是否正在同步库存，要么有值（1），要么为空，有值代表正在同步库存 */
+  private static final String IS_SYNCHRONIZING_STOCK_LOCK =
+      "cache:goods:lock:is_synchronizing_stock";
+
+  private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(OrderServiceImpl.class);
+
   @Override
   public boolean resetDb() {
     // 清空两张表
@@ -42,6 +49,8 @@ public class OrderServiceImpl implements IOrderService {
     goodsMapper.update(wrapper);
     GoodsConstant.GOODS_LIST.clear();
     GoodsConstant.GOODS_LIST.addAll(goodsList);
+    Assert.isTrue(!GoodsConstant.GOODS_LIST.isEmpty(), "加载商品列表失败");
+    LOGGER.info("商品列表大小：{}", GoodsConstant.GOODS_LIST.size());
     // 更新缓存中的库存
     for (Goods goods : goodsList) {
       String key = CharSequenceUtil.format("{}::{}", GOODS_STOCK_PREFIX, goods.getId());
@@ -80,10 +89,28 @@ public class OrderServiceImpl implements IOrderService {
   @Scheduled(fixedRate = 1000)
   public synchronized void syncStockFromRedisToDb() {
     ValueOperations<String, Object> operations = redisTemplate.opsForValue();
-    for (Goods goods : GoodsConstant.GOODS_LIST) {
-      String key = CharSequenceUtil.format("{}::{}", GOODS_STOCK_PREFIX, goods.getId());
-      int stock = (Integer) operations.get(key);
-      goodsMapper.updateStock(goods.getId(), stock);
+    Object lock = operations.get(IS_SYNCHRONIZING_STOCK_LOCK);
+    if (lock != null) {
+      LOGGER.info("本节点或其他节点正在同步库存，跳过本次任务");
+      return;
+    }
+    try {
+      operations.set(IS_SYNCHRONIZING_STOCK_LOCK, 1);
+      for (Goods goods : GoodsConstant.GOODS_LIST) {
+        String key = CharSequenceUtil.format("{}::{}", GOODS_STOCK_PREFIX, goods.getId());
+        Object value = operations.get(key);
+        // 在极少数的情况下，项目启动之后马上就执行了本方法，此时 Redis 中的库存可能还未初始化
+        if (value != null) {
+          int stock = (Integer) operations.get(key);
+          goodsMapper.updateStock(goods.getId(), stock);
+        }
+      }
+      // 睡眠一秒钟防止多个节点在一秒内多次执行本方法
+      Thread.sleep(1000);
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      operations.set(IS_SYNCHRONIZING_STOCK_LOCK, null);
     }
   }
 

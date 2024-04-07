@@ -1,11 +1,6 @@
 package cn.camio1945.orderbottlenecktest.listener;
 
-import cn.camio1945.orderbottlenecktest.constant.GoodsConstant;
-import cn.camio1945.orderbottlenecktest.mapper.*;
-import cn.camio1945.orderbottlenecktest.pojo.po.Goods;
 import cn.camio1945.orderbottlenecktest.service.IOrderService;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import java.util.List;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
