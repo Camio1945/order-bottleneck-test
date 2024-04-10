@@ -10,7 +10,11 @@
   </parent>
   <groupId>com.fakedomain</groupId>
   <artifactId>order-bottleneck-test-api</artifactId>
+<<<<<<< HEAD
   <version>tidb</version>
+=======
+  <version>mysql</version>
+>>>>>>> 38900966dbd028be18f1d6d579f44fc0fa3f04f4
   <name>order-bottleneck-test-api</name>
   <description>order-bottleneck-test-api</description>
   <properties>
