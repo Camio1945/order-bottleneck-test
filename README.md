@@ -21,12 +21,28 @@
 
    a. 随着机器数量增加，每秒提交的订单数的变化情况是怎样的。
 
+***
+
+# 分支说明
+
+master：单机 MySQL 版本，不依赖 Redis
+
+postgresql：单机 PostgreSQL 版本，不依赖 Redis
+
+mysql-redis：单机 MySQL 版本，依赖 Redis
+
+clickhouse：单机 ClickHouse 版本
+
+tidb：集群 TiDB 版本，依赖 Redis
 
 ***
 
 # 使用
 
-以 MySQL 为例：
+
+## 1. master 分支
+
+单机 MySQL 版本，不依赖 Redis：
 
 1. 自行安装 MySQL 8.0 。
 2. 使用 MySQL 的 root 用户执行 order-bottleneck-test-api/init_sql/1.order-bottleneck-test-mysql.sql 文件。
