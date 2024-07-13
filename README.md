@@ -47,3 +47,14 @@ tidb：集群 TiDB 版本，依赖 Redis
 1. 自行安装 MySQL 8.0 。
 2. 使用 MySQL 的 root 用户执行 order-bottleneck-test-api/init_sql/1.order-bottleneck-test-mysql.sql 文件。
 3. 使用 Intellij Idea 打开 order-bottleneck-test-api 项目，修改其中的 order-bottleneck-test-api/src/main/resources/application.yml 中的数据库 IP 。
+
+---
+
+# 压测
+
+JMeter 压测脚本文件路径：order-bottleneck-test-api/jmeter_scripts/order-bottleneck-test-api.jmx
+
+```
+JVM_ARGS="-Xms512M -Xmx2G" jmeter -n -t order-bottleneck-test-api.jmx -Jthreads=20 -Jrampup=2 -Jduration=30 -Jip=localhost -l jmeter_res_threads20_rampup2_duration30.mysql.jtl
+```
+
