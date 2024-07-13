@@ -54,7 +54,37 @@ tidb：集群 TiDB 版本，依赖 Redis
 
 JMeter 压测脚本文件路径：order-bottleneck-test-api/jmeter_scripts/order-bottleneck-test-api.jmx
 
+---
+
+## MySQL 示例
+
+1. 安装 MySQL 并初始化数据库：略
+2. 启动 Java ，注意修改 `-Xms` 、 `-Xmx` 、`--spring.datasource.url` 以适配自己的测试环境
+
+```sh
+java -jar -Xms1G -Xmx14G order-bottleneck-test-api-mysql.jar --spring.datasource.url="jdbc:mysql://172.24.79.174:3306/order_bottleneck_test?useSSL=false&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true"
 ```
-JVM_ARGS="-Xms512M -Xmx2G" jmeter -n -t order-bottleneck-test-api.jmx -Jthreads=20 -Jrampup=2 -Jduration=30 -Jip=localhost -l jmeter_res_threads20_rampup2_duration30.mysql.jtl
+
+3. 压测，注意修改 `JVM_ARGS` 和 `Jip` 以适配自己的测试环境
+
+```sh
+JVM_ARGS="-Xms1G -Xmx7G" jmeter -n -t order-bottleneck-test-api.jmx -Jthreads=20 -Jrampup=2 -Jduration=180 -Jip=172.24.79.173 -l jmeter_res_threads20_rampup2_duration180.mysql.jtl
+```
+
+---
+
+### PostgreSQL 示例
+
+1. 安装 PostgreSQL 并初始化数据库：略
+2. 启动 Java ，注意修改 `-Xms` 、 `-Xmx` 、`--spring.datasource.url` 以适配自己的测试环境
+
+```sh
+java -jar -Xms1G -Xmx14G order-bottleneck-test-api-postgresql.jar --spring.datasource.url="jdbc:postgresql://172.24.79.174:5432/order_bottleneck_test"
+```
+
+3. 压测，注意修改 `JVM_ARGS` 和 `Jip` 以适配自己的测试环境
+
+```sh
+JVM_ARGS="-Xms1G -Xmx7G" jmeter -n -t order-bottleneck-test-api.jmx -Jthreads=20 -Jrampup=2 -Jduration=180 -Jip=172.24.79.173 -l jmeter_res_threads20_rampup2_duration180.postgresql.jtl
 ```
 
