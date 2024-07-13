@@ -73,7 +73,7 @@ JVM_ARGS="-Xms1G -Xmx7G" jmeter -n -t order-bottleneck-test-api.jmx -Jthreads=20
 
 ---
 
-### PostgreSQL 示例
+## PostgreSQL 示例
 
 1. 安装 PostgreSQL 并初始化数据库：略
 2. 启动 Java ，注意修改 `-Xms` 、 `-Xmx` 、`--spring.datasource.url` 以适配自己的测试环境
