@@ -21,7 +21,7 @@ public interface OrderItemMapper extends BaseMapper<OrderItem> {
   @Insert(
       """
         <script>
-          INSERT INTO `order_item` (`order_id`, `goods_id`, `goods_count`, `goods_price`, `goods_img`, `total_amount`)
+          INSERT INTO \"private\".\"order_item\" (\"order_id\", \"goods_id\", \"goods_count\", \"goods_price\", \"goods_img\", \"total_amount\")
           VALUES
           <foreach collection="orderItems" item="item" separator="),(" open="(" close=")">
             #{item.orderId}, #{item.goodsId}, #{item.goodsCount}, #{item.goodsPrice}, #{item.goodsImg}, #{item.totalAmount}
@@ -31,7 +31,7 @@ public interface OrderItemMapper extends BaseMapper<OrderItem> {
   void insertBatch(List<OrderItem> orderItems);
 
   /** 截断表 */
-  @Update("TRUNCATE `order_item`")
+  @Update("TRUNCATE \"private\".\"order_item\"")
   void truncate();
 
   /**
@@ -39,6 +39,6 @@ public interface OrderItemMapper extends BaseMapper<OrderItem> {
    *
    * @return 商品总数
    */
-  @Select("SELECT IFNULL(SUM(`goods_count`),0) FROM `order_item`")
+  @Select("SELECT COALESCE(SUM(\"goods_count\"),0) FROM \"private\".\"order_item\"")
   int selectTotalGoodsCount();
 }

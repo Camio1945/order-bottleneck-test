@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  *
  * @author Camio1945
  */
-@TableName("order_item")
+@TableName("\"private\".\"order_item\"")
 public class OrderItem {
 
   @TableId(value = "id", type = IdType.AUTO)

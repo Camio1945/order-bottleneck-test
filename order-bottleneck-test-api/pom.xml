@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.fakedomain</groupId>
   <artifactId>order-bottleneck-test-api</artifactId>
-  <version>mysql</version>
+  <version>postgresql</version>
   <name>order-bottleneck-test-api</name>
   <description>order-bottleneck-test-api</description>
   <properties>
@@ -28,11 +28,11 @@
       <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
       <version>3.5.5</version>
     </dependency>
-    <!-- 用于连接 MySQL 8.0 -->
+    <!-- 用于连接 PostgreSQL -->
     <dependency>
-      <groupId>com.mysql</groupId>
-      <artifactId>mysql-connector-j</artifactId>
-      <version>8.0.33</version>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.5.0</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

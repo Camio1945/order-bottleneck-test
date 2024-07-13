@@ -14,6 +14,6 @@ import org.apache.ibatis.annotations.Update;
 public interface OrderMapper extends BaseMapper<Order> {
 
   /** 截断表 */
-  @Update("TRUNCATE `order`")
+  @Update("TRUNCATE \"private\".\"order\"")
   void truncate();
 }

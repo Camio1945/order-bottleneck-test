@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  *
  * @author Camio1945
  */
-@TableName("goods")
+@TableName("\"private\".\"goods\"")
 public class Goods {
 
   @TableId(value = "id", type = IdType.AUTO)

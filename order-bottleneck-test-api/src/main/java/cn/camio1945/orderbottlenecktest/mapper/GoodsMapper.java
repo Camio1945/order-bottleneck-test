@@ -22,10 +22,10 @@ public interface GoodsMapper extends BaseMapper<Goods> {
    */
   @Update(
       """
-          UPDATE `goods`
-            SET `stock` = `stock` - #{decreaseCount}
-          WHERE `id` = #{goodsId}
-            AND `stock` >= #{decreaseCount}
+          UPDATE \"private\".\"goods\"
+            SET \"stock\" = \"stock\" - #{decreaseCount}
+          WHERE \"id\" = #{goodsId}
+            AND \"stock\" >= #{decreaseCount}
           """)
   int decreaseStock(Integer goodsId, int decreaseCount);
 }
